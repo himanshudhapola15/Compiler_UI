@@ -1,0 +1,16 @@
+# Bison & Flex generated
+parser.tab.c
+parser.tab.h
+lex.yy.c
+
+# Compiled binaries
+a.out
+*.exe
+/bin/parser
+runtestparser
+
+# Upload temp files
+/upload/*
+
+# Node modules (if applicable)
+node_modules/
