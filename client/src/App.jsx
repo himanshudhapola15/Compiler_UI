@@ -30,7 +30,7 @@ export default function App() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-10">
+    <div className="max-w-5xl mx-auto py-10">
       <h1 className="text-3xl font-bold text-center mb-8">C Subset Compiler</h1>
       <CodeInput onSubmit={handleCompile} />
       <OutputDisplay result={result} />
