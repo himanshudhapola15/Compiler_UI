@@ -16,10 +16,11 @@ app.post("/compile", (req, res) => {
     return res.status(400).json({ error: "Code is required" });
   }
 
-  const codeFilePath = path.join(__dirname, "parser_text.cm");
+  const codeFilePath = path.join(__dirname, "parser" ,"parser_text.cm");
   const tokenFilePath = path.join(__dirname, "parser", "tokens.txt");
-  const buildScript = path.join(__dirname, "bin", "build.bat");
-  console.log(buildScript);
+  const buildScriptPath = path.join(__dirname, "parser", "build.bat");
+
+  console.log(buildScriptPath)
 
   try {
     fs.writeFileSync(codeFilePath, req.body.code);
@@ -28,8 +29,8 @@ app.post("/compile", (req, res) => {
   }
 
   exec(
-    buildScript,
-    { cwd: path.join(__dirname, "bin"), windowsHide: true },
+    `"${buildScriptPath}"`,
+    { cwd: path.join(__dirname, "parser") },
     (error, stdout, stderr) => {
       if (error) {
         console.error("Build error:", error);
@@ -39,11 +40,12 @@ app.post("/compile", (req, res) => {
       let tokens = "";
       try {
         tokens = fs.readFileSync(tokenFilePath, "utf8");
+        console.log("TOKENS: ", tokens);
       } catch (readErr) {
         console.error("Error reading tokens.txt:", readErr);
         tokens = "Error reading tokens.";
       }
-
+      console.log("TOKENS", tokens);
       res.json({
         output: stdout,
         tokens: tokens,

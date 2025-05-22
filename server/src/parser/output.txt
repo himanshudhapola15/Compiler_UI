@@ -1,0 +1,8 @@
+Parsing succeeded
+Node Type: VAR_DECL, Name: a, Value: 0
+  Node Type: VAR_DECL, Name: b, Value: 0
+    Node Type: K_NUM, Value: 10
+  Node Type: VAR_DECL, Name: sum, Value: 0
+    Node Type: BE_ADD, Value: 0
+      Node Type: VAR_NAME, Name: a, Value: 0
+      Node Type: VAR_NAME, Name: b, Value: 0

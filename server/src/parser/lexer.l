@@ -1,67 +1,52 @@
+%option noyywrap noinput nounput yylineno
+
 %{
-#include "parser.tab.h"
+#include "ast.h"              // Include ASTNode definition first
+#include "parser.tab.h"       // Include after ast.h
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+FILE *tokenFile;
 int yylex();
-int yylineno = 1;
-FILE *token_output;
-
-extern YYSTYPE yylval;
-
 %}
-
-%option noyywrap nounput noinput yylineno
 
 %%
 
-"else"          { fprintf(token_output, "ELSE\n"); return ELSE; }
-"if"            { fprintf(token_output, "IF\n"); return IF; }
-"int"           { fprintf(token_output, "INT\n"); return INT; }
-"return"        { fprintf(token_output, "RETURN\n"); return RETURN; }
-"void"          { fprintf(token_output, "VOID\n"); return VOID; }
-"while"         { fprintf(token_output, "WHILE\n"); return WHILE; }
+"else"          { fprintf(tokenFile, "ELSE\n"); return ELSE; }
+"if"            { fprintf(tokenFile, "IF\n"); return IF; }
+"int"           { fprintf(tokenFile, "INT\n"); return INT; }
+"return"        { fprintf(tokenFile, "RETURN\n"); return RETURN; }
+"void"          { fprintf(tokenFile, "VOID\n"); return VOID; }
+"while"         { fprintf(tokenFile, "WHILE\n"); return WHILE; }
 
-"+"             { fprintf(token_output, "ADD\n"); return ADD; }
-"-"             { fprintf(token_output, "SUB\n"); return SUB; }
-"*"             { fprintf(token_output, "MUL\n"); return MUL; }
-"/"             { fprintf(token_output, "DIV\n"); return DIV; }
+"+"             { fprintf(tokenFile, "ADD\n"); return ADD; }
+"-"             { fprintf(tokenFile, "SUB\n"); return SUB; }
+"*"             { fprintf(tokenFile, "MUL\n"); return MUL; }
+"/"             { fprintf(tokenFile, "DIV\n"); return DIV; }
 
-"<="            { fprintf(token_output, "LTE\n"); return LTE; }
-"<"             { fprintf(token_output, "LT\n"); return LT; }
-">="            { fprintf(token_output, "GTE\n"); return GTE; }
-">"             { fprintf(token_output, "GT\n"); return GT; }
-"=="            { fprintf(token_output, "EQ\n"); return EQ; }
-"!="            { fprintf(token_output, "NEQ\n"); return NEQ; }
+"<="            { fprintf(tokenFile, "LTE\n"); return LTE; }
+"<"             { fprintf(tokenFile, "LT\n"); return LT; }
+">="            { fprintf(tokenFile, "GTE\n"); return GTE; }
+">"             { fprintf(tokenFile, "GT\n"); return GT; }
+"=="            { fprintf(tokenFile, "EQ\n"); return EQ; }
+"!="            { fprintf(tokenFile, "NEQ\n"); return NEQ; }
+"="             { fprintf(tokenFile, "ASSIGN\n"); return ASSIGN; }
 
-"="             { fprintf(token_output, "ASSIGN\n"); return ASSIGN; }
+";"             { fprintf(tokenFile, "SEMI\n"); return SEMI; }
+","             { fprintf(tokenFile, "COMMA\n"); return COMMA; }
 
-";"             { fprintf(token_output, "SEMI\n"); return SEMI; }
-","             { fprintf(token_output, "COMMA\n"); return COMMA; }
-"("             { fprintf(token_output, "ROUND_OPEN\n"); return ROUND_OPEN; }
-")"             { fprintf(token_output, "ROUND_CLOSE\n"); return ROUND_CLOSE; }
-"["             { fprintf(token_output, "SQUARE_OPEN\n"); return SQUARE_OPEN; }
-"]"             { fprintf(token_output, "SQUARE_CLOSE\n"); return SQUARE_CLOSE; }
-"{"             { fprintf(token_output, "CURLY_OPEN\n"); return CURLY_OPEN; }
-"}"             { fprintf(token_output, "CURLY_CLOSE\n"); return CURLY_CLOSE; }
+"("             { fprintf(tokenFile, "ROUND_OPEN\n"); return ROUND_OPEN; }
+")"             { fprintf(tokenFile, "ROUND_CLOSE\n"); return ROUND_CLOSE; }
+"["             { fprintf(tokenFile, "SQUARE_OPEN\n"); return SQUARE_OPEN; }
+"]"             { fprintf(tokenFile, "SQUARE_CLOSE\n"); return SQUARE_CLOSE; }
+"{"             { fprintf(tokenFile, "CURLY_OPEN\n"); return CURLY_OPEN; }
+"}"             { fprintf(tokenFile, "CURLY_CLOSE\n"); return CURLY_CLOSE; }
 
-[a-zA-Z_][a-zA-Z0-9_]* {
-    yylval.string = strdup(yytext);
-    fprintf(token_output, "ID:%s\n", yytext);
-    return ID;
-}
+[a-zA-Z_][a-zA-Z0-9_]*   { yylval.string = strdup(yytext); fprintf(tokenFile, "ID(%s)\n", yytext); return ID; }
+[0-9]+                  { yylval.integer = atoi(yytext); fprintf(tokenFile, "NUM(%s)\n", yytext); return NUM; }
 
-[0-9]+ {
-    yylval.integer = atoi(yytext);
-    fprintf(token_output, "NUM:%s\n", yytext);
-    return NUM;
-}
+[ \t\r]+                { /* skip whitespace */ }
+"\n"                    { ++yylineno; }
 
-[ \t\r]+        ; // ignore spaces/tabs
-"//".*          ; // ignore single-line comments
-\n              { yylineno++; }
-
-.               { fprintf(token_output, "UNKNOWN:%c\n", yytext[0]); }
+"//".*                  { /* skip comment */ }
+.                       { fprintf(stderr, "Unknown character: %c\n", yytext[0]); }
 
 %%

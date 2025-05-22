@@ -1,0 +1,15 @@
+INT
+ID(a)
+SEMI
+INT
+ID(b)
+ASSIGN
+NUM(10)
+SEMI
+INT
+ID(sum)
+ASSIGN
+ID(a)
+ADD
+ID(b)
+SEMI
